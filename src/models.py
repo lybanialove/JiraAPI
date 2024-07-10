@@ -20,6 +20,11 @@ class ListSpentTime(BaseModel):
 
 async def set_one_time(spent_time: SpentTime, jira: JIRA):
     issue: Issue = jira.issue(id=spent_time.task_key)
+    issue.raw["fields"]["status"]["id"] = 10002
+    issue.update(fields={"status":issue.raw["fields"]["status"]}, jira=jira)
+    return issue.raw["fields"]["status"]["id"]
+
+
     res = date_time_formater(spent_time.time)
     spent_time_seconds: str
     if res["status"] == "Unsuccessful":
@@ -81,15 +86,15 @@ def date_time_formater(spent_time: str) -> dict:
             }
 
 
-async def check_respend_time(spent_time: SpentTime, jira: JIRA):
-    worklogs: list[Worklog] = jira.worklogs(spent_time.task_key)
-    start_time: datetime
-    flag: bool
-    spent_time_second: int
-    for worklog in worklogs:
-        start_time = parser.parse(worklog.raw["started"])
-        spent_time_second = worklog.raw["timeSpentSeconds"]
-        end_time = start_time + timedelta(seconds=spent_time_second)
-        if timedelta(seconds=end_time.second, hours=end_time.hour, minutes=end_time.minute,days=end_time.day) - timedelta(seconds=spent_time.actual_started.second, hours=spent_time.actual_started.hour, minutes=spent_time.actual_started.minute,days=spent_time.actual_started.day) < :
-            break
-        return worklog.raw
+# async def check_respend_time(spent_time: SpentTime, jira: JIRA):
+#     worklogs: list[Worklog] = jira.worklogs(spent_time.task_key)
+#     start_time: datetime
+#     flag: bool
+#     spent_time_second: int
+#     for worklog in worklogs:
+#         start_time = parser.parse(worklog.raw["started"])
+#         spent_time_second = worklog.raw["timeSpentSeconds"]
+#         end_time = start_time + timedelta(seconds=spent_time_second)
+#         if timedelta(seconds=end_time.second, hours=end_time.hour, minutes=end_time.minute,days=end_time.day) - timedelta(seconds=spent_time.actual_started.second, hours=spent_time.actual_started.hour, minutes=spent_time.actual_started.minute,days=spent_time.actual_started.day) < :
+#             break
+#         return worklog.raw

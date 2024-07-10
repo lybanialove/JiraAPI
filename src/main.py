@@ -2,7 +2,7 @@ from config import AppConfig
 from jira import JIRA,Worklog
 from sanic import response, Sanic
 from sanic.request import Request
-from models import SpentTime, set_one_time, set_list_times, ListSpentTime,check_respend_time
+from models import SpentTime, set_one_time, set_list_times, ListSpentTime
 from sanic_ext import openapi
 import json
 
@@ -27,8 +27,7 @@ app = Sanic("MyFirstSanicApp")
 async def home(request: Request):
     js = json.loads(request.body)
     spent_time = SpentTime.model_validate(js)
-    res = await check_respend_time(spent_time, jira)
-    return response.json({"res": res})
+    return response.json({"res": ""})
 
 
 @app.post("/worklog")
